@@ -1,41 +1,25 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CurrencyEntity } from '../../domain/entities/currency.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { CurrencyEntity } from '@local:src/domain';
 
 @Injectable()
 export class ListCurrencyUseCase {
   constructor(
-    // private readonly externalApiService: ExternalApiServiceContract,
+    // private readonly currencyQuoteByDateApiService: CurrencyQuoteByDateApiServiceContract,
     @Inject(CACHE_MANAGER) private cacheService: Cache,
   ) {}
 
-  async execute(): Promise<CurrencyEntity[]> {
-    const cachedData = await this.cacheService.get<{ name: string }>('cache-1');
-    // if (cachedData) {
-    //   console.log(`Getting data from cache!`);
-    //   const currencies: Currency[] = Object.values(cachedData).map(
-    //     (data: any) =>
-    //       new Currency(
-    //         data.id,
-    //         data.code,
-    //         data.codein,
-    //         data.name,
-    //         parseFloat(data.high),
-    //         parseFloat(data.low),
-    //         parseFloat(data.varBid),
-    //         parseFloat(data.pctChange),
-    //         parseFloat(data.bid),
-    //         parseFloat(data.ask),
-    //         parseInt(data.timestamp),
-    //         data.create_date,
-    //       ),
-    //   );
+  async execute(days: string): Promise<any> {
+    console.log('filtrar para: ', days, 'dias');
+    // return await this.cacheService.get('currency-quote-daily');
+    const coin1 = await this.cacheService.get(
+      'currency-quote-daily-Dólar Americano/Real Brasileiro',
+    );
+    const coin2 = await this.cacheService.get(
+      'currency-quote-daily-Dólar Americano/Real Brasileiro Turismo',
+    );
 
-    //   return currencies;
-    // }
-    // console.log(`sem cache!`);
-
-    return await this.cacheService.get('cache-1');
+    return { coin1, coin2 };
   }
 }

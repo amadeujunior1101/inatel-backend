@@ -1,30 +1,40 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { CurrencyEntity } from '../../domain/entities/currency.entity';
 import { firstValueFrom } from 'rxjs';
-import { ExternalApiServiceContract } from 'src/domain/contracts/externalApiService.contract';
 import { Cache } from 'cache-manager';
+import { HttpService } from '@nestjs/axios';
+import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import {
+  CurrencyEntity,
+  CurrencyQuoteApiServiceContract,
+} from '@local:src/domain';
+import { CurrencyGateway } from '@local:src/infra';
+import { EXTERNAL_API_PATH } from '@local:src/constants';
 
 @Injectable()
-export class ExternalApiService implements ExternalApiServiceContract {
+export class CurrencyQuoteApiService
+  implements CurrencyQuoteApiServiceContract
+{
   constructor(
     private readonly httpService: HttpService,
     @Inject(CACHE_MANAGER) private cacheService: Cache,
+    private readonly currencyGateway: CurrencyGateway,
   ) {}
 
   @Cron(CronExpression.EVERY_30_SECONDS)
-  async fetchExternalCurrencies(): Promise<void> {
+  async fetchCurrenciesQuote(): Promise<void> {
     try {
       const response = await firstValueFrom(
-        this.httpService.get(process.env.ECONOMY_AWESOME_API),
+        this.httpService.get(
+          `${process.env.ECONOMY_AWESOME_API}/last/${EXTERNAL_API_PATH.NAME_OF_COINS}`,
+        ),
       );
       const currenciesData = response.data;
       const currencies: CurrencyEntity[] = Object.values(currenciesData).map(
         (data: any) => new CurrencyEntity(data),
       );
       await this.cacheService.set('cache-1', currencies);
+      this.currencyGateway.broadcastCurrencyData();
       console.log('novo cache: ');
     } catch (error) {
       console.error('Erro ao buscar moedas externas:', error);

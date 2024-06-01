@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CurrencyEntity } from '../../../../domain/entities/currency.entity';
-import { CurrencyRepositoryContract } from 'src/domain/contracts/currencyRepository.contract';
+import { CurrencyEntity, CurrencyRepositoryContract } from '@local:src/domain';
 
 @Injectable()
 export class CurrencyRepository implements CurrencyRepositoryContract {

@@ -1,4 +1,4 @@
-import { CurrencyEntity } from '../entities/currency.entity';
+import { CurrencyEntity } from '@local:src/domain';
 
 export abstract class CurrencyRepositoryContract {
   abstract save(currency: CurrencyEntity): Promise<void>;

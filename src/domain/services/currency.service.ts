@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CurrencyEntity } from '../entities/currency.entity';
-import { CurrencyRepositoryContract } from '../contracts/currencyRepository.contract';
+import { CurrencyEntity, CurrencyRepositoryContract } from '@local:src/domain';
 
 @Injectable()
 export class CurrencyService {
@@ -15,7 +14,6 @@ export class CurrencyService {
   }
 
   async listAllCurrencies(): Promise<CurrencyEntity[]> {
-    // Retorne todas as moedas do repositório
     return this.currencyRepository.findAll();
   }
 }
