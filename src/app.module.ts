@@ -6,10 +6,24 @@ import { CurrencyService } from './domain/services/currency.service';
 import { CurrencyRepository } from './infra/adapters/persistence/repositories/currency.repository';
 import { CurrencyRepositoryContract } from './domain/contracts/currencyRepository.contract';
 import { ExternalApiServiceContract } from './domain/contracts/externalApiService.contract';
-import { ExternalApiService } from './infra/external/external-api.service.impl';
+import { ExternalApiService } from './infra/external/external-api.service';
+import { CacheModule } from '@nestjs/cache-manager';
+import { ScheduleModule } from '@nestjs/schedule';
+import * as redisStore from 'cache-manager-redis-store';
+import { EnvModule } from './env.module';
 
 @Module({
-  imports: [HttpModule],
+  imports: [
+    EnvModule,
+    HttpModule,
+    CacheModule.register({
+      isGlobal: true,
+      store: redisStore,
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT,
+    }),
+    ScheduleModule.forRoot(),
+  ],
   controllers: [CurrencyController],
   providers: [
     CurrencyService,

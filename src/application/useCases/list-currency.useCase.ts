@@ -1,28 +1,41 @@
-import { Injectable } from '@nestjs/common';
-import { CurrencyService } from '../../domain/services/currency.service';
-import { Currency } from '../../domain/entities/currency.entity';
-import { ExternalApiServiceContract } from 'src/domain/contracts/externalApiService.contract';
+import { Inject, Injectable } from '@nestjs/common';
+import { CurrencyEntity } from '../../domain/entities/currency.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class ListCurrencyUseCase {
   constructor(
-    private readonly currencyService: CurrencyService,
-    private readonly externalApiService: ExternalApiServiceContract,
+    // private readonly externalApiService: ExternalApiServiceContract,
+    @Inject(CACHE_MANAGER) private cacheService: Cache,
   ) {}
 
-  async execute(): Promise<Currency[]> {
-    // Obter moedas locais
-    const localCurrencies = await this.currencyService.listAllCurrencies();
+  async execute(): Promise<CurrencyEntity[]> {
+    const cachedData = await this.cacheService.get<{ name: string }>('cache-1');
+    // if (cachedData) {
+    //   console.log(`Getting data from cache!`);
+    //   const currencies: Currency[] = Object.values(cachedData).map(
+    //     (data: any) =>
+    //       new Currency(
+    //         data.id,
+    //         data.code,
+    //         data.codein,
+    //         data.name,
+    //         parseFloat(data.high),
+    //         parseFloat(data.low),
+    //         parseFloat(data.varBid),
+    //         parseFloat(data.pctChange),
+    //         parseFloat(data.bid),
+    //         parseFloat(data.ask),
+    //         parseInt(data.timestamp),
+    //         data.create_date,
+    //       ),
+    //   );
 
-    // Obter moedas externas da API
-    const externalCurrencies =
-      await this.externalApiService.fetchExternalCurrencies();
+    //   return currencies;
+    // }
+    // console.log(`sem cache!`);
 
-    // send to redis cache
-
-    // Combinar moedas locais e externas
-    const allCurrencies = [...localCurrencies, ...externalCurrencies];
-
-    return allCurrencies;
+    return await this.cacheService.get('cache-1');
   }
 }

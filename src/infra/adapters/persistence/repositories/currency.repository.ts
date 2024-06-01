@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { Currency } from '../../../../domain/entities/currency.entity';
+import { CurrencyEntity } from '../../../../domain/entities/currency.entity';
 import { CurrencyRepositoryContract } from 'src/domain/contracts/currencyRepository.contract';
 
 @Injectable()
 export class CurrencyRepository implements CurrencyRepositoryContract {
-  private currencies: Currency[] = [];
+  private currencies: CurrencyEntity[] = [];
 
-  async save(user: Currency): Promise<void> {
+  async save(user: CurrencyEntity): Promise<void> {
     this.currencies.push(user);
   }
 
-  async findAll(): Promise<Currency[]> {
+  async findAll(): Promise<CurrencyEntity[]> {
     return this.currencies;
   }
 
-  async findById(id: string): Promise<Currency | undefined> {
+  async findById(code: string): Promise<CurrencyEntity | undefined> {
     // eslint-disable-next-line prettier/prettier
-    return this.currencies.find((user) => user.id === id);
+    return this.currencies.find((user) => user.code === code);
   }
 }
