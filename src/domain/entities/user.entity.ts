@@ -1,9 +1,15 @@
-export class UserEntity {
-  id: string;
-  email: string;
-  password: string;
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-  constructor(props: UserEntity) {
-    Object.assign(this, props);
-  }
+export type UserDocument = UserEntity & Document;
+
+@Schema({ collection: 'users' })
+export class UserEntity {
+  @Prop({ required: true })
+  email: string;
+
+  @Prop({ required: true })
+  password: string;
 }
+
+export const UserSchema = SchemaFactory.createForClass(UserEntity);

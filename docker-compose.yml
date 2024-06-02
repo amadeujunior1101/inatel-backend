@@ -19,6 +19,16 @@ services:
     depends_on:
       - redis
 
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo:/data/db
+
 volumes:
   redis:
+    driver: local
+  mongo:
     driver: local

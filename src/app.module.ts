@@ -1,14 +1,25 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
-import { CurrencyController } from '@local:src/presentation';
-import { ListCurrencyUseCase } from '@local:src/application';
+import { CurrencyController, UserController } from '@local:src/presentation';
+import {
+  CreateUserUseCase,
+  GetFavoriteCurrenciesUseCase,
+  ListCurrencyUseCase,
+} from '@local:src/application';
 import {
   CurrencyQuoteByDateApiServiceContract,
-  CurrencyService,
-  CurrencyRepositoryContract,
   CurrencyQuoteApiServiceContract,
+  UserEntity,
+  UserSchema,
+  UserRepositoryContract,
+  FavoriteCurrencyRepositoryContract,
+  FavoriteCurrenciesEntity,
+  FavoriteCurrenciesSchema,
 } from '@local:src/domain';
-import { CurrencyRepository } from '@local:src/infra/adapters';
+import {
+  FavoriteCurrencyRepository,
+  UserRepository,
+} from '@local:src/infra/adapters';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import * as redisStore from 'cache-manager-redis-store';
@@ -19,6 +30,8 @@ import {
   InitializationService,
   CurrencyQuoteByDateApiService,
 } from '@local:src/infra/http';
+import { DatabaseModule } from './database.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -31,16 +44,26 @@ import {
       port: process.env.REDIS_PORT,
     }),
     ScheduleModule.forRoot(),
+    DatabaseModule,
+    MongooseModule.forFeature([
+      { name: UserEntity.name, schema: UserSchema },
+      { name: FavoriteCurrenciesEntity.name, schema: FavoriteCurrenciesSchema },
+    ]),
   ],
-  controllers: [CurrencyController],
+  controllers: [UserController, CurrencyController],
   providers: [
+    CreateUserUseCase,
     ListCurrencyUseCase,
-    CurrencyService,
+    GetFavoriteCurrenciesUseCase,
     CurrencyGateway,
     InitializationService,
     {
-      provide: CurrencyRepositoryContract,
-      useClass: CurrencyRepository,
+      provide: UserRepositoryContract,
+      useClass: UserRepository,
+    },
+    {
+      provide: FavoriteCurrencyRepositoryContract,
+      useClass: FavoriteCurrencyRepository,
     },
     {
       provide: CurrencyQuoteApiServiceContract,
