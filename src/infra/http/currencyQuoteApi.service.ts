@@ -21,19 +21,19 @@ export class CurrencyQuoteApiService
     private readonly currencyGateway: CurrencyGateway,
   ) {}
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  // @Cron(CronExpression.EVERY_30_SECONDS)
   async fetchCurrenciesQuote(): Promise<void> {
     try {
       const response = await firstValueFrom(
         this.httpService.get(
-          `${process.env.ECONOMY_AWESOME_API}/last/${EXTERNAL_API_PATH.NAME_OF_COINS}`,
+          `${process.env.ECONOMY_AWESOME_API}/last/${EXTERNAL_API_PATH.CURRENCY_ACRONYM}`,
         ),
       );
       const currenciesData = response.data;
       const currencies: CurrencyEntity[] = Object.values(currenciesData).map(
         (data: any) => new CurrencyEntity(data),
       );
-      await this.cacheService.set('cache-1', currencies);
+      await this.cacheService.set('currency-cache', currencies);
       this.currencyGateway.broadcastCurrencyData();
       console.log('novo cache: ');
     } catch (error) {
