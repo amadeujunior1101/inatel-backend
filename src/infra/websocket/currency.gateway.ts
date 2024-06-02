@@ -31,7 +31,6 @@ export class CurrencyGateway
   async sendCurrencyData(client: Socket) {
     const cachedData = await this.cacheService.get('currency-cache');
     if (cachedData) {
-      // console.log('Sending currency data to client:', cachedData); // Log para verificar dados
       client.emit('currencyData', cachedData);
     }
   }
@@ -39,7 +38,6 @@ export class CurrencyGateway
   async broadcastCurrencyData() {
     const cachedData = await this.cacheService.get('currency-cache');
     if (cachedData) {
-      // console.log('Broadcasting currency data:', cachedData); // Log para verificar dados
       this.server.emit('currencyData', cachedData);
     }
   }

@@ -11,13 +11,15 @@ export class UserRepository implements UserRepositoryContract {
   ) {}
 
   async save(user: UserEntity): Promise<UserEntity> {
-    const createdUser = await this.userModel.create(user); // Usar create em vez de new + save
-    return createdUser.toObject(); // Retornar o documento completo como um objeto
+    const createdUser = await this.userModel.create(user);
+    return createdUser.toObject();
   }
 
   async findById(id: string): Promise<UserEntity | undefined> {
-    // const user = await this.userModel.findOne({ id }).exec();
-    // return user ? (user.toObject() as UserEntity) : undefined;
     return await this.userModel.findOne({ _id: id }).exec();
+  }
+
+  async findByEmail(email: string): Promise<UserEntity | undefined> {
+    return await this.userModel.findOne({ email }).exec();
   }
 }

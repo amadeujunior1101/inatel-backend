@@ -1,5 +1,7 @@
 import { CurrencyEntity } from '@local:src/domain';
 
 export abstract class CurrencyQuoteByDateApiServiceContract {
-  abstract fetchCurrencyQuoteByDate(coin: string): Promise<CurrencyEntity[]>;
+  abstract fetchCurrencyQuoteByDate(
+    currency: string,
+  ): Promise<CurrencyEntity[]>;
 }

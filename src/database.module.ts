@@ -1,12 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { EnvModule } from './modules';
 
 @Module({
-  imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/nestjs', {
-      // useNewUrlParser: true,
-      // useUnifiedTopology: true,
-    }),
-  ],
+  imports: [EnvModule, MongooseModule.forRoot(String(process.env.MONGO_URL))],
 })
 export class DatabaseModule {}

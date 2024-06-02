@@ -1,14 +1,12 @@
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   CurrencyEntity,
   CurrencyQuoteByDateApiServiceContract,
 } from '@local:src/domain';
 import { EXTERNAL_API_PATH } from '@local:src/constants';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
 
 @Injectable()
 export class CurrencyQuoteByDateApiService

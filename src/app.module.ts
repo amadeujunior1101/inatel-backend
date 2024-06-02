@@ -1,37 +1,26 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { CurrencyController, UserController } from '@local:src/presentation';
 import {
-  CreateUserUseCase,
   GetFavoriteCurrenciesUseCase,
   ListCurrencyUseCase,
+  UpdateFavoriteCurrenciesUseCase,
 } from '@local:src/application';
 import {
   CurrencyQuoteByDateApiServiceContract,
   CurrencyQuoteApiServiceContract,
-  UserEntity,
-  UserSchema,
-  UserRepositoryContract,
-  FavoriteCurrencyRepositoryContract,
-  FavoriteCurrenciesEntity,
-  FavoriteCurrenciesSchema,
 } from '@local:src/domain';
-import {
-  FavoriteCurrencyRepository,
-  UserRepository,
-} from '@local:src/infra/adapters';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import * as redisStore from 'cache-manager-redis-store';
-import { EnvModule } from '@local:src/env.module';
 import { CurrencyQuoteApiService } from '@local:src/infra/http/';
 import { CurrencyGateway } from '@local:src/infra';
 import {
   InitializationService,
   CurrencyQuoteByDateApiService,
 } from '@local:src/infra/http';
-import { DatabaseModule } from './database.module';
-import { MongooseModule } from '@nestjs/mongoose';
+import { DatabaseModule } from '@local:src/database.module';
+import { AuthModule, EnvModule, RepositoriesModule } from '@local:src/modules';
 
 @Module({
   imports: [
@@ -45,26 +34,16 @@ import { MongooseModule } from '@nestjs/mongoose';
     }),
     ScheduleModule.forRoot(),
     DatabaseModule,
-    MongooseModule.forFeature([
-      { name: UserEntity.name, schema: UserSchema },
-      { name: FavoriteCurrenciesEntity.name, schema: FavoriteCurrenciesSchema },
-    ]),
+    RepositoriesModule,
+    AuthModule,
   ],
   controllers: [UserController, CurrencyController],
   providers: [
-    CreateUserUseCase,
     ListCurrencyUseCase,
     GetFavoriteCurrenciesUseCase,
+    UpdateFavoriteCurrenciesUseCase,
     CurrencyGateway,
     InitializationService,
-    {
-      provide: UserRepositoryContract,
-      useClass: UserRepository,
-    },
-    {
-      provide: FavoriteCurrencyRepositoryContract,
-      useClass: FavoriteCurrencyRepository,
-    },
     {
       provide: CurrencyQuoteApiServiceContract,
       useClass: CurrencyQuoteApiService,

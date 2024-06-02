@@ -22,6 +22,5 @@ export class InitializationService implements OnModuleInit {
         currencies,
       );
     }
-    console.log('Dados de moedas carregados e armazenados no cache.');
   }
 }

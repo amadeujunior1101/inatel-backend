@@ -21,7 +21,7 @@ export class CurrencyQuoteApiService
     private readonly currencyGateway: CurrencyGateway,
   ) {}
 
-  // @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async fetchCurrenciesQuote(): Promise<void> {
     try {
       const response = await firstValueFrom(
@@ -35,7 +35,6 @@ export class CurrencyQuoteApiService
       );
       await this.cacheService.set('currency-cache', currencies);
       this.currencyGateway.broadcastCurrencyData();
-      console.log('novo cache: ');
     } catch (error) {
       console.error('Erro ao buscar moedas externas:', error);
       throw error;

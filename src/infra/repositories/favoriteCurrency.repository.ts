@@ -20,12 +20,13 @@ export class FavoriteCurrencyRepository
     return await createdFavorite.save();
   }
 
-  async update(favorite: FavoriteCurrenciesEntity): Promise<void> {
-    const createdUser = new this.favoriteModel(favorite);
-    await createdUser.updateOne();
+  async update(filter: any, update: any, options?: any): Promise<void> {
+    await this.favoriteModel.updateOne(filter, update, options);
   }
 
-  async findById(id: string): Promise<FavoriteCurrenciesEntity | undefined> {
-    return await this.favoriteModel.findOne({ userId: id }).exec();
+  async findById(
+    userId: string,
+  ): Promise<FavoriteCurrenciesEntity | undefined> {
+    return await this.favoriteModel.findOne({ userId }).exec();
   }
 }

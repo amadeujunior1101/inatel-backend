@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import * as jwt from 'jsonwebtoken';
 import {
   CurrencyEntity,
   FavoriteCurrencyRepositoryContract,
@@ -14,28 +15,46 @@ export class ListCurrencyUseCase {
     @Inject(CACHE_MANAGER) private cacheService: Cache,
   ) {}
 
-  async execute(days: number): Promise<any> {
+  async execute(days: number, token?: string): Promise<any> {
     const result = {};
 
-    const favoriteExits = await this.favoriteCurrencyRepository.findById(
-      '665befd972697fca15d7e82fa',
-    );
+    let userId: string | null = null;
 
-    if (favoriteExits !== null) {
-      for (const currencyKey of favoriteExits.currenciesName.split(',')) {
-        const currencyData = await this.cacheService.get<CurrencyEntity[]>(
-          currencyKey,
-        );
-
-        if (currencyData && Array.isArray(currencyData)) {
-          const recentData = currencyData.slice(0, days);
-          const currencyName = currencyKey.replace('currency-quote-daily-', '');
-
-          result[currencyName] = recentData;
-        }
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET) as {
+          sub: string;
+        };
+        userId = decoded.sub;
+      } catch (error) {
+        console.error('Token inválido:', error);
       }
+    }
 
-      return result;
+    if (userId) {
+      const favoriteExits = await this.favoriteCurrencyRepository.findById(
+        userId,
+      );
+
+      if (favoriteExits) {
+        for (const currencyKey of favoriteExits.currenciesName.split(',')) {
+          const currencyData = await this.cacheService.get<CurrencyEntity[]>(
+            currencyKey,
+          );
+
+          if (currencyData && Array.isArray(currencyData)) {
+            const recentData = currencyData.slice(0, days);
+            const currencyName = currencyKey.replace(
+              'currency-quote-daily-',
+              '',
+            );
+
+            result[currencyName] = recentData;
+          }
+        }
+
+        return result;
+      }
     }
 
     for (const currencyKey of EXTERNAL_API_PATH.CURRENCY_NAME_CACHE) {

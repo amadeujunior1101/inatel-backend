@@ -1,3 +1,4 @@
+import * as jwt from 'jsonwebtoken';
 import { Injectable } from '@nestjs/common';
 import { FavoriteCurrencyRepositoryContract } from '@local:src/domain';
 
@@ -7,9 +8,20 @@ export class GetFavoriteCurrenciesUseCase {
     private readonly favoriteCurrencyRepository: FavoriteCurrencyRepositoryContract,
   ) {}
 
-  async execute(id: string): Promise<any> {
-    const result = await this.favoriteCurrencyRepository.findById(id);
+  async execute(token: string): Promise<any> {
+    let userId: string | null = null;
 
-    return result;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET) as {
+        sub: string;
+      };
+      userId = decoded.sub;
+
+      const result = await this.favoriteCurrencyRepository.findById(userId);
+
+      return result;
+    } catch (err) {
+      console.log('Failed to find favorite currency', err);
+    }
   }
 }

@@ -1,27 +1,34 @@
 import {
-  CreateUserDTO,
-  CreateUserUseCase,
   GetFavoriteCurrenciesUseCase,
+  UpdateFavoriteCurrenciesUseCase,
 } from '@local:src/application';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { FavoriteCurrenciesEntity, UserEntity } from '@local:src/domain';
+import { Body, Controller, Get, Put, Request, UseGuards } from '@nestjs/common';
+import { FavoriteCurrenciesEntity } from '@local:src/domain';
+import { JwtAuthGuard } from '@local:src/application/auth';
 
 @Controller('users')
 export class UserController {
   constructor(
-    private readonly createUserUseCase: CreateUserUseCase,
     private readonly getFavoriteCurrenciesUseCase: GetFavoriteCurrenciesUseCase,
+    private readonly updateFavoriteCurrenciesUseCase: UpdateFavoriteCurrenciesUseCase,
   ) {}
 
-  @Post()
-  async createUser(@Body() createUser: CreateUserDTO): Promise<UserEntity> {
-    return this.createUserUseCase.execute(createUser);
+  @UseGuards(JwtAuthGuard)
+  @Get('')
+  async getFavoriteCurrencies(
+    @Request() req: any,
+  ): Promise<FavoriteCurrenciesEntity> {
+    const token = req.headers.authorization.split(' ')[1];
+    return this.getFavoriteCurrenciesUseCase.execute(token);
   }
 
-  @Get(':id')
-  async getFavoriteCurrencies(
-    @Param('id') id: string,
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  async updateFavoriteCurrencies(
+    @Body('currenciesName') currenciesName: string,
+    @Request() req: any,
   ): Promise<FavoriteCurrenciesEntity> {
-    return this.getFavoriteCurrenciesUseCase.execute(id);
+    const token = req.headers.authorization.split(' ')[1];
+    return this.updateFavoriteCurrenciesUseCase.execute(currenciesName, token);
   }
 }
