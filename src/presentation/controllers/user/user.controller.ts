@@ -5,7 +5,19 @@ import {
 import { Body, Controller, Get, Put, Request, UseGuards } from '@nestjs/common';
 import { FavoriteCurrenciesEntity } from '@local:src/domain';
 import { JwtAuthGuard } from '@local:src/application/auth';
+import {
+  ApiBearerAuth,
+  ApiHeader,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { SuccessFavoriteCurrencyResponse, UnauthorizedResponse } from './docs';
 
+@ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UserController {
   constructor(
@@ -15,6 +27,9 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get('')
+  @ApiOperation({ summary: 'Retorna as moedas favoritas' })
+  @ApiOkResponse(SuccessFavoriteCurrencyResponse.getResponse())
+  @ApiUnauthorizedResponse(UnauthorizedResponse.getResponse())
   async getFavoriteCurrencies(
     @Request() req: any,
   ): Promise<FavoriteCurrenciesEntity> {
@@ -24,6 +39,8 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Put()
+  @ApiOperation({ summary: 'Atualiza a lista de moedas favoritas' })
+  @ApiUnauthorizedResponse(UnauthorizedResponse.getResponse())
   async updateFavoriteCurrencies(
     @Body('currenciesName') currenciesName: string,
     @Request() req: any,
