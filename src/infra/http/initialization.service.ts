@@ -6,7 +6,7 @@ import { EXTERNAL_API_PATH } from '@local:src/constants';
 
 @Injectable()
 export class InitializationService implements OnModuleInit {
-  private readonly coins: string[] = EXTERNAL_API_PATH.CURRENCY_NAME;
+  private readonly currencies: string[] = EXTERNAL_API_PATH.CURRENCY_NAME;
 
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
@@ -14,9 +14,11 @@ export class InitializationService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    for (const coin of this.coins) {
+    for (const currency of this.currencies) {
       const currencies =
-        await this.currencyQuoteByDateApiService.fetchCurrencyQuoteByDate(coin);
+        await this.currencyQuoteByDateApiService.fetchCurrencyQuoteByDate(
+          currency,
+        );
       await this.cacheManager.set(
         `currency-quote-daily-${currencies[0].name}`,
         currencies,
