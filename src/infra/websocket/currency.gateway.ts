@@ -11,7 +11,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CORS_CONFIG } from '@local:src/constants';
 
 @Injectable()
-@WebSocketGateway(CORS_CONFIG)
+@WebSocketGateway({ cors: CORS_CONFIG })
 export class CurrencyGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {

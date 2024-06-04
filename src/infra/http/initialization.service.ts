@@ -2,7 +2,7 @@ import { Injectable, OnModuleInit, Inject } from '@nestjs/common';
 import { CurrencyQuoteByDateApiServiceContract } from '@local:src/domain';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { EXTERNAL_API_PATH } from '@local:src/constants';
+import { CACHE_DURATION_TIME, EXTERNAL_API_PATH } from '@local:src/constants';
 
 @Injectable()
 export class InitializationService implements OnModuleInit {
@@ -19,9 +19,11 @@ export class InitializationService implements OnModuleInit {
         await this.currencyQuoteByDateApiService.fetchCurrencyQuoteByDate(
           currency,
         );
+
       await this.cacheManager.set(
         `currency-quote-daily-${currencies[0].name}`,
         currencies,
+        CACHE_DURATION_TIME.history,
       );
     }
   }

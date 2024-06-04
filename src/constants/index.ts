@@ -40,8 +40,14 @@ export const EXTERNAL_API_PATH = {
 };
 
 export const CORS_CONFIG = {
-  origin: process.env.FRONTEND_URL,
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
-  credentials: true,
+  cors: {
+    origin: process.env.FRONTEND_URL, // substitua pela URL do seu frontend
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true,
+  },
+};
+
+export const CACHE_DURATION_TIME = {
+  history: 24 * 3600 * 1000,
 };
