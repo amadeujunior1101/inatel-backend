@@ -10,6 +10,7 @@ Este projeto utiliza as seguintes tecnologias:
 - Radis
 - Mongo
 - API Currency 
+- swagger
 
 ## Executando a Aplicação
 
